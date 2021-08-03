@@ -1,26 +1,37 @@
 <?php
 
 $orders = [
-    ['pizza'=>'calzone', 'person'=>'koen'],
-    ['pizza'=>'margarita', 'person'=>'manuele'],
-    ['pizza'=>'golden', 'person'=>'students'],
+    [
+        'pizza'=>'calzone',
+        'person'=>'koen'],
+    [
+        'pizza'=>'margarita',
+        'person'=>'manuele'],
+    [
+        'pizza'=>'golden',
+        'person'=>'students'],
 ];
-function orderPizza($pizzaType, $person) {
+
+function orderPizza($pizzaType, $person){
+    $addresses = [
+        'koen' => 'a yacht in Antwerp',
+        'manuele' => 'somewhere in Belgium',
+        'students' => 'BeCode office'
+    ];
+
+    if(!in_array($person, array_keys($addresses))){
+        throw new Exception('User ' . $person . ' not found');
+    }
+
     try {
         $price = getPrice($pizzaType);
     }
     catch (Exception $e){
         echo 'Exception: ' . $e->getMessage(); //handle the exception
+        return;
     }
-    if($person == 'koen'){
-        $address = 'a yacht in Antwerp';
-    }
-    if ($person == 'manuele'){
-        $address = 'somewhere in Belgium';
-    }
-    if ($person == 'students') {
-        $address = 'BeCode office';
-    }
+
+    $address = $addresses[$person];
 
     echo 'Creating new order... <br>'
             .'A ' . $pizzaType  .' pizza should be sent to ' . $person . ". <br>The address:" .$address
@@ -63,7 +74,12 @@ function getPrice($pizza)
 function orderPizzaToAll($orderList)
 {
    foreach ($orderList as $order){
-      orderPizza($order['pizza'], $order['person']);
-    }
+       try {
+           orderPizza($order['pizza'], $order['person']);
+       } catch (Exception $e) {
+           echo 'Error: ' .$e->getMessage();
+           return;
+       }
+   }
 }
 orderPizzaToAll($orders);
